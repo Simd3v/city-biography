@@ -1,0 +1,12 @@
+{
+  "cities": [
+    {
+      "id": "abu-dhabi",
+      "name": "Abu Dhabi"
+    },
+    {
+      "id": "dubai",
+      "name": "Dubai"
+    }
+  ]
+}
