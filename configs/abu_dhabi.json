@@ -8,16 +8,26 @@
     "abudhabi_island": [24.40, 54.30, 24.55, 54.45],
     "reem_maryah": [24.48, 54.38, 24.53, 54.43],
     "reem_maryah_east": [24.50, 54.43, 24.56, 54.48],
+    "reem_island_n": [24.50, 54.40, 24.54, 54.44],
+    "reem_island_s": [24.48, 54.40, 24.52, 54.44],
+    "maryah_island": [24.50, 54.44, 24.53, 54.48],
+    "saadiyat": [24.52, 54.42, 24.58, 54.50],
+    "yas_island": [24.44, 54.54, 24.52, 54.66],
     "hudayriat": [24.40, 54.20, 24.49, 54.32],
     "saadiyat_yas": [24.50, 54.55, 24.65, 54.72],
+    "masdar_city": [24.42, 54.60, 24.47, 54.65],
+    "al_raha_beach": [24.44, 54.62, 24.50, 54.70],
     "al_raha_khalifa_a": [24.30, 54.55, 24.50, 54.78],
+    "khalifa_city_a": [24.38, 54.62, 24.44, 54.72],
+    "mbz_city": [24.32, 54.50, 24.40, 54.62],
+    "al_shamkha": [24.38, 54.58, 24.48, 54.72],
     "mussafah_icad_n": [24.30, 54.45, 24.40, 54.55],
     "mussafah_icad_s": [24.25, 54.50, 24.32, 54.62],
     "khalifa_b_zayed": [24.20, 54.60, 24.38, 54.85],
     "al_shahama": [24.55, 54.65, 24.75, 54.88]
   },
   "attribution": {
-    "footprints": "OpenStreetMap (Department of Municipalities and Transport, #DMT)",
+    "footprints": "OpenStreetMap contributors",
     "epoch": "GHS-OBAT R2024A (Joint Research Centre, EU Copernicus)"
   }
 }

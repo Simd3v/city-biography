@@ -1,20 +1,36 @@
 {
   "id": "dubai",
   "name": "Dubai",
-  "center": [55.27, 25.19],
+  "center": [
+    55.27,
+    25.19
+  ],
   "default_zoom": 11.0,
-  "total_buildings": 170787,
+  "total_buildings": 225823,
   "zones": [
     "deira_bur_dubai",
     "downtown_business_bay",
     "creek_harbour",
     "marina_jbr",
     "palm_jumeirah",
+    "palm_fronds_n",
+    "palm_fronds_s",
     "jlt_jvc_sports",
     "al_barsha",
+    "dubai_hills",
+    "mbr_city",
+    "meydan_nad_sheba",
+    "ras_al_khor",
+    "sport_city",
     "mirdif",
+    "al_warqa",
+    "al_khawaneej",
     "silicon_oasis",
+    "international_city",
+    "academic_city",
     "jebel_ali",
+    "dubai_south",
+    "expo_city",
     "al_quoz",
     "deira_n",
     "deira_s",
@@ -25,12 +41,12 @@
     "jvc"
   ],
   "epoch_counts": {
-    "Before 1980": 63758,
-    "1980–1989": 10885,
-    "1990–1999": 61658,
-    "2000–2009": 17807,
-    "2010–2020": 15239,
-    "Unknown": 1440
+    "Before 1980": 80764,
+    "1990–1999": 75189,
+    "2000–2009": 27002,
+    "2010–2020": 25641,
+    "1980–1989": 13718,
+    "Unknown": 3509
   },
   "attribution": {
     "footprints": "OpenStreetMap contributors",
@@ -52,6 +68,18 @@
     "4": "#2ecc71",
     "5": "#3498db"
   },
-  "epoch_order": [1, 2, 3, 4, 5, 0],
-  "bbox": [55.0023463, 24.9491379, 55.52016709999999, 25.30096079999999]
+  "epoch_order": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    0
+  ],
+  "bbox": [
+    55.0023463,
+    24.8778806,
+    55.5805523,
+    25.3204037
+  ]
 }

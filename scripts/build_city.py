@@ -90,10 +90,18 @@ def year_to_epoch(year: int | None) -> int:
     return 5
 
 
+def empty_buildings_gdf() -> gpd.GeoDataFrame:
+    return gpd.GeoDataFrame({"geometry": []}, geometry="geometry", crs="EPSG:4326")
+
+
 def fetch_osm_zone(city_id: str, zone: str, bbox: tuple[float, float, float, float]) -> gpd.GeoDataFrame:
     cache = DATA / "raw" / city_id / f"{zone}.geojson"
     if cache.exists():
-        return gpd.read_file(cache)
+        try:
+            gdf = gpd.read_file(cache)
+            return gdf if len(gdf) else empty_buildings_gdf()
+        except Exception:
+            cache.unlink(missing_ok=True)
 
     south, west, north, east = bbox
     query = f"""
@@ -144,10 +152,14 @@ def fetch_osm_zone(city_id: str, zone: str, bbox: tuple[float, float, float, flo
         if geom:
             features.append({"type": "Feature", "geometry": geom, "properties": tags})
 
-    gdf = gpd.GeoDataFrame.from_features(features, crs="EPSG:4326")
     cache.parent.mkdir(parents=True, exist_ok=True)
-    if len(gdf):
+    if not features:
+        gdf = empty_buildings_gdf()
         gdf.to_file(cache, driver="GeoJSON")
+        return gdf
+
+    gdf = gpd.GeoDataFrame.from_features(features, crs="EPSG:4326")
+    gdf.to_file(cache, driver="GeoJSON")
     return gdf
 
 
