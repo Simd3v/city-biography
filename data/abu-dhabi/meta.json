@@ -6,7 +6,7 @@
     24.47
   ],
   "default_zoom": 11.2,
-  "total_buildings": 100111,
+  "total_buildings": 287101,
   "zones": [
     "abudhabi_island",
     "reem_maryah",
@@ -18,27 +18,37 @@
     "yas_island",
     "hudayriat",
     "saadiyat_yas",
+    "between_bridges_w",
+    "al_raha_west",
+    "al_bandar_zeina",
     "masdar_city",
     "al_raha_beach",
     "al_raha_khalifa_a",
-    "khalifa_city_a",
+    "khalifa_city_a_n",
+    "khalifa_city_a_s",
+    "khalifa_city_b_core",
+    "khalifa_city_bridge",
+    "mbz_north",
+    "mbz_south",
     "mbz_city",
     "al_shamkha",
+    "shakhbout_city",
     "mussafah_icad_n",
     "mussafah_icad_s",
+    "mussafah_residential",
     "khalifa_b_zayed",
     "al_shahama"
   ],
   "epoch_counts": {
-    "1990–1999": 38602,
-    "Before 1980": 22248,
-    "2010–2020": 15302,
-    "2000–2009": 14253,
-    "1980–1989": 6250,
-    "Unknown": 3456
+    "1990–1999": 96237,
+    "2010–2020": 64061,
+    "Before 1980": 47696,
+    "2000–2009": 44273,
+    "1980–1989": 18648,
+    "Unknown": 16186
   },
   "attribution": {
-    "footprints": "OpenStreetMap contributors",
+    "footprints": "OpenStreetMap contributors + Microsoft Global ML Building Footprints",
     "epoch": "GHS-OBAT R2024A (Joint Research Centre, EU Copernicus)"
   },
   "epoch_labels": {
@@ -66,9 +76,9 @@
     0
   ],
   "bbox": [
-    54.253240799999986,
-    24.2093304,
-    54.870647199999986,
-    24.744910899999997
+    54.14989,
+    24.09995,
+    55.05011,
+    24.85008
   ]
 }
