@@ -27,11 +27,56 @@ html, body {
 .sidebar > * { pointer-events: auto; }
 
 .panel {
-  background: rgba(0, 0, 0, 0.82);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #fff;
   backdrop-filter: blur(6px);
 }
+
+body.bg-black .panel {
+  background: #000000;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+body.bg-beige .panel {
+  background: #D8D0C2;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: #1c1814;
+}
+
+body.bg-beige .city-btn {
+  background: rgba(0, 0, 0, 0.06);
+  color: rgba(28, 24, 20, 0.75);
+  border-color: rgba(0, 0, 0, 0.14);
+}
+body.bg-beige .city-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #1c1814;
+}
+body.bg-beige .city-btn.active {
+  background: rgba(0, 0, 0, 0.16);
+  color: #1c1814;
+  border-color: rgba(0, 0, 0, 0.28);
+}
+
+body.bg-beige .legend-meta {
+  border-top-color: rgba(0, 0, 0, 0.1);
+  color: rgba(28, 24, 20, 0.55);
+}
+
+body.bg-beige button {
+  background: rgba(0, 0, 0, 0.06);
+  color: #1c1814;
+  border-color: rgba(0, 0, 0, 0.16);
+}
+body.bg-beige button:hover { background: rgba(0, 0, 0, 0.1); }
+body.bg-beige button.active {
+  background: rgba(0, 0, 0, 0.14);
+  border-color: rgba(0, 0, 0, 0.28);
+}
+
+body.bg-beige .bg-mode-label,
+body.bg-beige .timeline-label { color: rgba(28, 24, 20, 0.55); }
+body.bg-beige .count { color: rgba(28, 24, 20, 0.45); }
+body.bg-beige .timeline { accent-color: #1c1814; }
 
 .city-switcher {
   display: flex;
@@ -64,6 +109,22 @@ html, body {
   line-height: 1.35;
   margin-bottom: 14px;
 }
+.legend-title-city {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.legend-title-sub {
+  display: block;
+  margin-top: 5px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.35;
+  opacity: 0.72;
+  letter-spacing: 0.01em;
+}
+body.bg-beige .legend-title-sub { opacity: 0.78; }
 .legend-item {
   display: flex;
   align-items: center;
@@ -113,6 +174,32 @@ button {
 button:hover { background: rgba(255, 255, 255, 0.16); }
 button.active { background: rgba(255, 255, 255, 0.22); border-color: rgba(255, 255, 255, 0.35); }
 button:disabled { opacity: 0.45; cursor: wait; }
+
+.bg-mode-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+.bg-mode-label {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.bg-mode-switcher {
+  display: flex;
+  gap: 6px;
+}
+.bg-mode-btn {
+  flex: 1;
+  padding: 7px 10px;
+  font-size: 11px;
+}
+.bg-mode-btn.active {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.35);
+}
 
 .timeline-wrap {
   display: flex;

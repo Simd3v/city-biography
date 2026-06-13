@@ -1,0 +1,15 @@
+{
+  "labels": [
+    { "text": "Deira", "lng": 55.318, "lat": 25.273 },
+    { "text": "Downtown", "lng": 55.274, "lat": 25.197 },
+    { "text": "Business Bay", "lng": 55.261, "lat": 25.183 },
+    { "text": "Sobha", "lng": 55.312, "lat": 25.172 },
+    { "text": "Palm Jumeirah", "lng": 55.124, "lat": 25.118 },
+    { "text": "Marina", "lng": 55.141, "lat": 25.076 },
+    { "text": "JLT", "lng": 55.148, "lat": 25.069 },
+    { "text": "JVC", "lng": 55.207, "lat": 25.056 },
+    { "text": "Dubai Hills", "lng": 55.247, "lat": 25.103 },
+    { "text": "Jebel Ali", "lng": 55.027, "lat": 25.012 },
+    { "text": "Arabian Gulf", "lng": 54.92, "lat": 25.48, "water": true }
+  ]
+}

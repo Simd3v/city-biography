@@ -6,16 +6,19 @@
   <title>Building Age Map</title>
   <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
   <link href="style.css" rel="stylesheet" />
+  <!-- CARTOGRAPHY-V2: remove next 2 lines to revert -->
+  <link href="cartography.css" rel="stylesheet" />
 </head>
-<body>
+<body class="bg-black">
   <div class="loading" id="loading">Loading map…</div>
   <div id="map"></div>
+  <div id="map-labels" aria-hidden="true"></div>
 
   <aside class="sidebar" id="sidebar">
     <div class="panel">
       <div class="city-switcher" id="city-switcher"></div>
       <div class="legend">
-        <h1 id="legend-title">Building construction period</h1>
+        <h1 id="legend-title"><span class="legend-title-city">Abu Dhabi</span><span class="legend-title-sub">Sand into city, by decade</span></h1>
         <div id="legend-items"></div>
         <div class="legend-meta" id="legend-meta"></div>
       </div>
@@ -29,6 +32,13 @@
       <div class="controls-row">
         <button type="button" id="btn-export">⬇ Export PNG</button>
       </div>
+      <div class="bg-mode-wrap">
+        <span class="bg-mode-label">Background</span>
+        <div class="bg-mode-switcher">
+          <button type="button" class="bg-mode-btn active" data-bg-mode="black">Black</button>
+          <button type="button" class="bg-mode-btn" data-bg-mode="beige">Beige</button>
+        </div>
+      </div>
       <div class="timeline-wrap">
         <span class="timeline-label" id="era-label">All periods</span>
         <input type="range" class="timeline" id="timeline" min="0" max="5" value="5" step="1" />
@@ -38,6 +48,8 @@
   </aside>
 
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <!-- CARTOGRAPHY-V2: remove next line to revert -->
+  <script src="cartography.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

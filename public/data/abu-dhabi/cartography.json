@@ -1,0 +1,12 @@
+{
+  "labels": [
+    { "text": "Corniche", "lng": 54.328, "lat": 24.492 },
+    { "text": "Reem", "lng": 54.393, "lat": 24.498 },
+    { "text": "Al Bateen", "lng": 54.352, "lat": 24.431 },
+    { "text": "Saadiyat", "lng": 54.438, "lat": 24.538 },
+    { "text": "Yas", "lng": 54.602, "lat": 24.471 },
+    { "text": "Hudayriat", "lng": 54.372, "lat": 24.395 },
+    { "text": "Khalifa City", "lng": 54.575, "lat": 24.408 },
+    { "text": "Arabian Gulf", "lng": 54.40, "lat": 24.74, "water": true }
+  ]
+}
