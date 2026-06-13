@@ -1,4 +1,4 @@
-/* Optional: paste a Cloudflare Web Analytics token to upgrade from the basic counter. */
+/* Cloudflare Web Analytics — paste your token from dash.cloudflare.com → Web Analytics */
 window.SITE_CONFIG = {
   cloudflareAnalyticsToken: "",
 };
