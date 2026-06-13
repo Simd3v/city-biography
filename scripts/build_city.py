@@ -16,6 +16,8 @@ Data pipeline:
 from __future__ import annotations
 
 import argparse
+import csv
+import gzip
 import json
 import re
 import sys
@@ -26,6 +28,7 @@ import geopandas as gpd
 import pandas as pd
 import pyogrio
 import requests
+from shapely import set_precision
 from tqdm import tqdm
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -38,6 +41,10 @@ OVERPASS_URLS = [
     "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
     "https://overpass-api.de/api/interpreter",
 ]
+
+MS_MANIFEST_URL = (
+    "https://minedbuildings.z5.web.core.windows.net/global-buildings/dataset-links.csv"
+)
 
 OBAT_URL = (
     "https://cidportal.jrc.ec.europa.eu/ftp/jrc-opendata/GHSL/"
@@ -163,6 +170,69 @@ def fetch_osm_zone(city_id: str, zone: str, bbox: tuple[float, float, float, flo
     return gdf
 
 
+def load_microsoft_uae_footprints() -> gpd.GeoDataFrame:
+    """Microsoft Global ML Building Footprints — fills low-density villa areas OSM misses."""
+    cache = DATA / "raw" / "microsoft_uae.geojson"
+    if cache.exists():
+        return gpd.read_file(cache)
+
+    print("Downloading Microsoft building footprints (United Arab Emirates)...")
+    resp = requests.get(MS_MANIFEST_URL, timeout=120)
+    resp.raise_for_status()
+    tiles = [row for row in csv.DictReader(resp.text.splitlines()) if row.get("Location") == "UnitedArabEmirates"]
+    if not tiles:
+        raise RuntimeError("No Microsoft footprint tiles found for United Arab Emirates")
+
+    features: list[dict] = []
+    for row in tqdm(tiles, desc="MS UAE tiles"):
+        tile_resp = requests.get(row["Url"], timeout=120)
+        tile_resp.raise_for_status()
+        raw = gzip.decompress(tile_resp.content).decode("utf-8")
+        for line in raw.splitlines():
+            line = line.strip()
+            if line:
+                features.append(json.loads(line))
+
+    gdf = gpd.GeoDataFrame.from_features(features, crs="EPSG:4326")
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    gdf.to_file(cache, driver="GeoJSON")
+    print(f"  → {len(gdf):,} Microsoft footprints cached")
+    return gdf
+
+
+def merge_osm_microsoft(
+    osm: gpd.GeoDataFrame, ms: gpd.GeoDataFrame, dedupe_m: float = 10.0
+) -> gpd.GeoDataFrame:
+    """Add Microsoft footprints where OSM has no nearby building (villa suburbs)."""
+    if ms is None or ms.empty:
+        return osm
+
+    osm3857 = osm.to_crs(3857)
+    ms3857 = ms.to_crs(3857)
+    osm_pts = gpd.GeoDataFrame(geometry=osm3857.geometry.centroid, crs=3857)
+    ms_pts = gpd.GeoDataFrame(geometry=ms3857.geometry.centroid, crs=3857)
+
+    matched = gpd.sjoin_nearest(
+        ms_pts,
+        osm_pts,
+        how="left",
+        max_distance=dedupe_m,
+        distance_col="dist",
+    )
+    keep = matched[matched["index_right"].isna()].index
+    ms_new = ms3857.loc[keep].copy()
+    ms_new["building"] = "yes"
+    ms_new["source"] = "microsoft"
+    ms_new["geometry"] = ms_new.geometry.simplify(8.0, preserve_topology=True)
+
+    print(f"  → adding {len(ms_new):,} Microsoft footprints (OSM dedupe {dedupe_m:.0f} m)")
+    if ms_new.empty:
+        return osm
+
+    combined = pd.concat([osm3857, ms_new], ignore_index=True)
+    return gpd.GeoDataFrame(combined, geometry="geometry", crs=3857).to_crs(4326)
+
+
 def load_obat() -> gpd.GeoDataFrame:
     cache = DATA / "raw" / "ghs_obat_are.gpkg"
     if not cache.exists():
@@ -219,7 +289,20 @@ def build_city(city_id: str) -> None:
     buildings = buildings[buildings.geometry.notna() & ~buildings.geometry.is_empty]
     buildings = buildings.drop_duplicates(subset=["geometry"], keep="first")
     buildings["geometry"] = buildings.geometry.buffer(0)
-    print(f"Total unique footprints: {len(buildings):,}")
+    print(f"Total unique OSM footprints: {len(buildings):,}")
+
+    if cfg.get("microsoft_footprints"):
+        west, south, east, north = cfg["clip_bbox"]
+        ms_all = load_microsoft_uae_footprints()
+        ms_clip = ms_all.cx[west:east, south:north]
+        print(f"Microsoft footprints in clip area: {len(ms_clip):,}")
+        buildings = merge_osm_microsoft(
+            buildings,
+            ms_clip,
+            dedupe_m=cfg.get("microsoft_dedupe_m", 10),
+        )
+        buildings = buildings.drop_duplicates(subset=["geometry"], keep="first")
+        print(f"Combined OSM + Microsoft: {len(buildings):,}")
 
     print("Loading GHS-OBAT epoch reference...")
     obat = load_obat()
@@ -238,12 +321,13 @@ def build_city(city_id: str) -> None:
     obat_pts["_cx"] = obat_pts.geometry.x
     obat_pts["_cy"] = obat_pts.geometry.y
 
-    print("Spatial join OSM ↔ GHS-OBAT (nearest neighbour, 80 m)...")
+    ghs_dist = cfg.get("ghs_max_distance_m", 80)
+    print(f"Spatial join OSM ↔ GHS-OBAT (nearest neighbour, {ghs_dist} m)...")
     joined = gpd.sjoin_nearest(
         buildings,
         obat_pts[["_cx", "_cy", "epoch_ref", "geometry"]],
         how="left",
-        max_distance=80,
+        max_distance=ghs_dist,
         distance_col="match_dist",
     )
     joined = joined.drop(columns=[c for c in joined.columns if c.startswith("index_")], errors="ignore")
@@ -268,8 +352,12 @@ def build_city(city_id: str) -> None:
     out = out[[c for c in keep if c in out.columns]].copy().reset_index(drop=True)
 
     out_3857 = out.to_crs(3857)
-    out_3857["geometry"] = out_3857.geometry.simplify(1.0, preserve_topology=True)
+    simplify_m = cfg.get("simplify_m", 1.0)
+    out_3857["geometry"] = out_3857.geometry.simplify(simplify_m, preserve_topology=True)
     out = out_3857.to_crs(4326)
+    prec = cfg.get("coordinate_precision")
+    if prec:
+        out["geometry"] = out.geometry.apply(lambda g: set_precision(g, prec))
 
     geojson_path = out_dir / "buildings.geojson"
     out.to_file(geojson_path, driver="GeoJSON")
