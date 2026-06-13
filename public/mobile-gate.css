@@ -1,0 +1,114 @@
+#mobile-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: none;
+  flex-direction: column;
+  background: #000;
+  color: #fff;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+#mobile-gate.is-visible {
+  display: flex;
+}
+
+.mobile-gate-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 20px 32px;
+  gap: 20px;
+  max-width: 420px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.mobile-gate-preview {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 2px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+}
+
+.mobile-gate-title {
+  text-align: center;
+  width: 100%;
+}
+
+.mobile-gate-city {
+  display: block;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.mobile-gate-sub {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  opacity: 0.72;
+  line-height: 1.4;
+}
+
+.mobile-gate-note {
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+  opacity: 0.65;
+  max-width: 320px;
+}
+
+.mobile-gate-cities {
+  display: flex;
+  gap: 8px;
+}
+
+.mobile-gate-cities button {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 7px 14px;
+  font-size: 11px;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.mobile-gate-cities button.active {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.mobile-gate-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.mobile-gate-actions button {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 13px;
+  border-radius: 2px;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mobile-gate-actions .btn-primary {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+.mobile-gate-actions .btn-ghost {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.55);
+  border-color: transparent;
+  font-size: 12px;
+  padding: 8px;
+}

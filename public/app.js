@@ -622,7 +622,19 @@ async function init() {
   setTimeout(startAnimation, 800);
 }
 
-init().catch((err) => {
-  setLoading("Load error: " + err.message, true);
-  console.error(err);
-});
+function bootApp() {
+  init().catch((err) => {
+    setLoading("Load error: " + err.message, true);
+    console.error(err);
+  });
+}
+
+if (window.MOBILE_GATE_SKIP) {
+  window.addEventListener("mobile-gate-dismissed", () => {
+    document.getElementById("sidebar")?.style.removeProperty("visibility");
+    document.getElementById("map")?.style.removeProperty("visibility");
+    bootApp();
+  }, { once: true });
+} else {
+  bootApp();
+}

@@ -6,10 +6,31 @@
   <title>Building Age Map</title>
   <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
   <link href="style.css" rel="stylesheet" />
+  <link href="mobile-gate.css" rel="stylesheet" />
   <!-- CARTOGRAPHY-V2: remove next 2 lines to revert -->
   <link href="cartography.css" rel="stylesheet" />
 </head>
 <body class="bg-black">
+  <div id="mobile-gate" aria-live="polite">
+    <div class="mobile-gate-inner">
+      <img class="mobile-gate-preview" src="previews/abu-dhabi-black.jpg" alt="" />
+      <div class="mobile-gate-title">
+        <span class="mobile-gate-city">Abu Dhabi</span>
+        <span class="mobile-gate-sub">Sand into city, by decade</span>
+      </div>
+      <p class="mobile-gate-note">
+        This map is built for desktop and print. Open on a computer for the full interactive experience.
+      </p>
+      <div class="mobile-gate-cities">
+        <button type="button" data-preview-city="abu-dhabi" class="active">Abu Dhabi</button>
+        <button type="button" data-preview-city="dubai">Dubai</button>
+      </div>
+      <div class="mobile-gate-actions">
+        <button type="button" class="btn-ghost mobile-gate-dismiss">Load full map anyway</button>
+      </div>
+    </div>
+  </div>
+
   <div class="loading" id="loading">Loading map…</div>
   <div id="map"></div>
   <div id="map-labels" aria-hidden="true"></div>
@@ -47,6 +68,9 @@
     </div>
   </aside>
 
+  <script src="site-config.js"></script>
+  <script src="analytics.js"></script>
+  <script src="mobile-gate.js"></script>
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
   <!-- CARTOGRAPHY-V2: remove next line to revert -->
   <script src="cartography.js"></script>

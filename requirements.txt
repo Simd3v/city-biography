@@ -3,3 +3,4 @@ pyogrio>=0.10.0
 shapely>=2.0.0
 requests>=2.32.0
 tqdm>=4.66.0
+matplotlib>=3.8.0
