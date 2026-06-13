@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Building Age Map</title>
+  <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
+  <link href="style.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="loading" id="loading">Loading map…</div>
+  <div id="map"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="panel">
+      <div class="city-switcher" id="city-switcher"></div>
+      <div class="legend">
+        <h1 id="legend-title">Building construction period</h1>
+        <div id="legend-items"></div>
+        <div class="legend-meta" id="legend-meta"></div>
+      </div>
+    </div>
+
+    <div class="panel controls">
+      <div class="controls-row">
+        <button type="button" id="btn-play" class="active">▶ Animate</button>
+        <button type="button" id="btn-reset">Show all</button>
+      </div>
+      <div class="controls-row">
+        <button type="button" id="btn-export">⬇ Export PNG</button>
+      </div>
+      <div class="timeline-wrap">
+        <span class="timeline-label" id="era-label">All periods</span>
+        <input type="range" class="timeline" id="timeline" min="0" max="5" value="5" step="1" />
+      </div>
+      <span class="count" id="count-label"></span>
+    </div>
+  </aside>
+
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
