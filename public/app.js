@@ -29,13 +29,14 @@ const ERA_COLORS_LIGHT = {
   0: "#8A8278",
 };
 
+/* White mode: warm (old) → coral rose (mid) → teal/blue (new) */
 const ERA_COLORS_WHITE = {
-  1: "#A83D5C",
-  2: "#C45E76",
-  3: "#DA8094",
-  4: "#ECA4B0",
-  5: "#B895C8",
-  0: "#C0BCB8",
+  1: "#6E4050",
+  2: "#9E5A68",
+  3: "#E8A090",
+  4: "#6EAAA6",
+  5: "#5A90C0",
+  0: "#B8B4B0",
 };
 
 const ERA_COLORS_BY_MODE = {
