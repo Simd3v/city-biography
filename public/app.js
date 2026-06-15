@@ -118,6 +118,11 @@ const GEOJSON_SOURCE_OPTS = {
   generateId: true,
 };
 
+const BUILDING_LAYER_OPTS = {
+  minzoom: 0,
+  maxzoom: 24,
+};
+
 /* Print export: 7200px ≈ 60 cm @ 300 DPI on the long edge (typical city crop). */
 const EXPORT_WIDTH = 7200;
 const EXPORT_IDLE_PASSES = 8;
