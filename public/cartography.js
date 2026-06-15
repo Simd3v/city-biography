@@ -579,6 +579,7 @@
     applyBuildingStyle,
     drawExportCartouche,
     composeMapWithLabels,
+    drawLabelsOnBounds,
     hideLabelsForExport(hide) {
       const c = document.getElementById("map-labels");
       if (c) c.style.visibility = hide ? "hidden" : "";
