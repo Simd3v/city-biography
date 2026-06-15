@@ -125,6 +125,7 @@ const BUILDING_LAYER_OPTS = {
 
 /* Print export: 7200px ≈ 60 cm @ 300 DPI on the long edge (typical city crop). */
 const EXPORT_WIDTH = 7200;
+const EXPORT_TILES = 2;
 const EXPORT_IDLE_PASSES = 8;
 const EXPORT_CROP_MARGIN = 20;
 
@@ -232,6 +233,7 @@ const map = new maplibregl.Map({
   attributionControl: false,
   fadeDuration: 0,
   preserveDrawingBuffer: true,
+  maxCanvasSize: [8192, 8192],
 });
 
 map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
@@ -448,6 +450,51 @@ async function waitForFullRender(idlePasses = 4) {
   for (let i = 0; i < idlePasses; i++) await waitForIdle();
 }
 
+async function renderTiledExportCanvas(mapEl, bounds, exportWidth, exportHeight) {
+  const sw = bounds.getSouthWest();
+  const ne = bounds.getNorthEast();
+  const lngSpan = ne.lng - sw.lng;
+  const latSpan = ne.lat - sw.lat;
+  const tileW = Math.ceil(exportWidth / EXPORT_TILES);
+  const tileH = Math.ceil(exportHeight / EXPORT_TILES);
+
+  const out = document.createElement("canvas");
+  out.width = exportWidth;
+  out.height = exportHeight;
+  const ctx = out.getContext("2d");
+  if (!ctx) throw new Error("Could not create export canvas");
+
+  for (let row = 0; row < EXPORT_TILES; row++) {
+    for (let col = 0; col < EXPORT_TILES; col++) {
+      const west = sw.lng + (lngSpan * col) / EXPORT_TILES;
+      const east = sw.lng + (lngSpan * (col + 1)) / EXPORT_TILES;
+      const south = sw.lat + (latSpan * (EXPORT_TILES - 1 - row)) / EXPORT_TILES;
+      const north = sw.lat + (latSpan * (EXPORT_TILES - row)) / EXPORT_TILES;
+
+      Object.assign(mapEl.style, {
+        width: `${tileW}px`,
+        height: `${tileH}px`,
+      });
+      map.resize();
+      map.fitBounds([[west, south], [east, north]], { padding: 0, duration: 0, maxZoom: 22 });
+      await waitForFullRender(EXPORT_IDLE_PASSES);
+      await waitForIdle();
+
+      const tile = map.getCanvas();
+      ctx.drawImage(
+        tile,
+        0, 0, tile.width, tile.height,
+        col * tileW, row * tileH, tileW, tileH
+      );
+    }
+  }
+
+  if (window.Cartography?.enabled) {
+    window.Cartography.drawLabelsOnBounds(out, bounds, backgroundMode);
+  }
+  return out;
+}
+
 async function exportPNG() {
   const btn = document.getElementById("btn-export");
   const sidebar = document.getElementById("sidebar");
@@ -486,15 +533,21 @@ async function exportPNG() {
     });
     document.body.style.overflow = "hidden";
     if (typeof map.setPixelRatio === "function") map.setPixelRatio(1);
-    map.resize();
-    if (bounds) map.fitBounds(bounds, { padding: 0, duration: 0, maxZoom: 22 });
 
-    await waitForFullRender(EXPORT_IDLE_PASSES);
+    let mapCanvas;
+    if (bounds && EXPORT_WIDTH > 4096) {
+      mapCanvas = await renderTiledExportCanvas(mapEl, bounds, EXPORT_WIDTH, exportHeight);
+    } else {
+      map.resize();
+      if (bounds) map.fitBounds(bounds, { padding: 0, duration: 0, maxZoom: 22 });
+      await waitForFullRender(EXPORT_IDLE_PASSES);
+      await waitForIdle();
+      mapCanvas = window.Cartography?.enabled
+        ? window.Cartography.composeMapWithLabels(map, backgroundMode)
+        : map.getCanvas();
+    }
+
     if (window.Cartography?.enabled) window.Cartography.hideLabelsForExport(true);
-    await waitForIdle();
-    const mapCanvas = window.Cartography?.enabled
-      ? window.Cartography.composeMapWithLabels(map, backgroundMode)
-      : map.getCanvas();
     const cropped = cropCanvasToBuildings(mapCanvas, EXPORT_CROP_MARGIN);
     if (window.Cartography?.enabled) {
       window.Cartography.drawExportCartouche(
@@ -503,7 +556,10 @@ async function exportPNG() {
     } else {
       drawExportLegend(cropped);
     }
-    await downloadCanvas(cropped, `${currentCity}-building-age-${backgroundMode}.png`);
+    await downloadCanvas(
+      cropped,
+      `${currentCity}-building-age-${backgroundMode}-${cropped.width}x${cropped.height}.png`
+    );
   } catch (err) {
     console.error(err);
     alert("Export failed: " + err.message);

@@ -387,6 +387,48 @@
     });
   }
 
+  function drawLabelsOnBounds(canvas, bounds, backgroundMode) {
+    if (!cityConfig?.labels?.length || !bounds) return canvas;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return canvas;
+
+    const sw = bounds.getSouthWest();
+    const ne = bounds.getNorthEast();
+    const w = canvas.width;
+    const h = canvas.height;
+    const lngSpan = ne.lng - sw.lng;
+    const latSpan = ne.lat - sw.lat;
+    if (!lngSpan || !latSpan) return canvas;
+
+    const fontScale = w / 1200;
+    const ink = labelInk(backgroundMode);
+
+    cityConfig.labels.forEach((lb) => {
+      const x = ((lb.lng - sw.lng) / lngSpan) * w;
+      const y = ((ne.lat - lb.lat) / latSpan) * h;
+      if (x < 0 || y < 0 || x > w || y > h) return;
+
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.shadowColor = ink.shadow;
+      ctx.shadowBlur = 10 * fontScale;
+
+      if (lb.water) {
+        ctx.font = `italic ${12 * fontScale}px "Helvetica Neue", Arial, sans-serif`;
+        ctx.fillStyle = ink.water;
+        ctx.fillText(lb.text.toUpperCase(), 0, 0);
+      } else {
+        ctx.font = `500 ${11 * fontScale}px "Helvetica Neue", Arial, sans-serif`;
+        ctx.fillStyle = ink.faint;
+        ctx.fillText(lb.text.toUpperCase(), 0, 0);
+      }
+      ctx.restore();
+    });
+    return canvas;
+  }
+
   function composeMapWithLabels(map, backgroundMode) {
     const src = map.getCanvas();
     const out = document.createElement("canvas");
