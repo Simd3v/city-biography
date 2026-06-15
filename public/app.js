@@ -29,6 +29,21 @@ const ERA_COLORS_LIGHT = {
   0: "#8A8278",
 };
 
+const ERA_COLORS_WHITE = {
+  1: "#A83D5C",
+  2: "#C45E76",
+  3: "#DA8094",
+  4: "#ECA4B0",
+  5: "#B895C8",
+  0: "#C0BCB8",
+};
+
+const ERA_COLORS_BY_MODE = {
+  black: ERA_COLORS,
+  beige: ERA_COLORS_LIGHT,
+  white: ERA_COLORS_WHITE,
+};
+
 const LIGHT_BUILDING_STYLE = {
   fillOpacity: 0.88,
   outlineColor: "rgba(0, 0, 0, 0.08)",
@@ -36,11 +51,24 @@ const LIGHT_BUILDING_STYLE = {
   shadowTranslate: [0.5, 0.5],
 };
 
+const WHITE_BUILDING_STYLE = {
+  fillOpacity: 0.92,
+  outlineColor: "rgba(0, 0, 0, 0.06)",
+  shadowOpacity: 0,
+  shadowTranslate: [0, 0],
+};
+
 const DARK_BUILDING_STYLE = {
   fillOpacity: 1,
   outlineColor: "rgba(255, 255, 255, 0.08)",
   shadowOpacity: 0,
   shadowTranslate: [0, 0],
+};
+
+const BUILDING_STYLE_BY_MODE = {
+  black: DARK_BUILDING_STYLE,
+  beige: LIGHT_BUILDING_STYLE,
+  white: WHITE_BUILDING_STYLE,
 };
 /* ========== LIGHT-MODE-STYLING END ========== */
 
@@ -60,6 +88,15 @@ const BACKGROUND_MODES = {
     map: "#D8D0C2",
     page: "#D8D0C2",
     cropThreshold: 20,
+    legendTitle: "rgba(28, 24, 20, 0.92)",
+    legendText: "rgba(48, 42, 36, 0.88)",
+  },
+  white: {
+    id: "white",
+    label: "White",
+    map: "#FFFFFF",
+    page: "#FFFFFF",
+    cropThreshold: 18,
     legendTitle: "rgba(28, 24, 20, 0.92)",
     legendText: "rgba(48, 42, 36, 0.88)",
   },
@@ -107,11 +144,11 @@ function isBackgroundPixel(r, g, b, bgRgb, threshold) {
 }
 
 function getEraColors() {
-  return backgroundMode === "beige" ? ERA_COLORS_LIGHT : ERA_COLORS;
+  return ERA_COLORS_BY_MODE[backgroundMode] || ERA_COLORS;
 }
 
 function getBuildingStyle() {
-  return backgroundMode === "beige" ? LIGHT_BUILDING_STYLE : DARK_BUILDING_STYLE;
+  return BUILDING_STYLE_BY_MODE[backgroundMode] || DARK_BUILDING_STYLE;
 }
 
 function eraColorExpression(colors) {
@@ -149,7 +186,7 @@ function applyBackgroundMode() {
   const theme = getTheme();
   document.documentElement.style.background = theme.page;
   document.body.style.background = theme.page;
-  document.body.classList.remove("bg-black", "bg-beige");
+  document.body.classList.remove("bg-black", "bg-beige", "bg-white");
   document.body.classList.add(`bg-${backgroundMode}`);
   document.getElementById("loading").style.background = theme.page;
   document.getElementById("loading").style.color =

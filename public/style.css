@@ -42,41 +42,58 @@ body.bg-beige .panel {
   color: #1c1814;
 }
 
-body.bg-beige .city-btn {
+body.bg-white .panel {
+  background: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: #1c1814;
+}
+
+body.bg-beige .city-btn,
+body.bg-white .city-btn {
   background: rgba(0, 0, 0, 0.06);
   color: rgba(28, 24, 20, 0.75);
   border-color: rgba(0, 0, 0, 0.14);
 }
-body.bg-beige .city-btn:hover {
+body.bg-beige .city-btn:hover,
+body.bg-white .city-btn:hover {
   background: rgba(0, 0, 0, 0.1);
   color: #1c1814;
 }
-body.bg-beige .city-btn.active {
+body.bg-beige .city-btn.active,
+body.bg-white .city-btn.active {
   background: rgba(0, 0, 0, 0.16);
   color: #1c1814;
   border-color: rgba(0, 0, 0, 0.28);
 }
 
-body.bg-beige .legend-meta {
+body.bg-beige .legend-meta,
+body.bg-white .legend-meta {
   border-top-color: rgba(0, 0, 0, 0.1);
   color: rgba(28, 24, 20, 0.55);
 }
 
-body.bg-beige button {
+body.bg-beige button,
+body.bg-white button {
   background: rgba(0, 0, 0, 0.06);
   color: #1c1814;
   border-color: rgba(0, 0, 0, 0.16);
 }
-body.bg-beige button:hover { background: rgba(0, 0, 0, 0.1); }
-body.bg-beige button.active {
+body.bg-beige button:hover,
+body.bg-white button:hover { background: rgba(0, 0, 0, 0.1); }
+body.bg-beige button.active,
+body.bg-white button.active {
   background: rgba(0, 0, 0, 0.14);
   border-color: rgba(0, 0, 0, 0.28);
 }
 
 body.bg-beige .bg-mode-label,
-body.bg-beige .timeline-label { color: rgba(28, 24, 20, 0.55); }
-body.bg-beige .count { color: rgba(28, 24, 20, 0.45); }
-body.bg-beige .timeline { accent-color: #1c1814; }
+body.bg-beige .timeline-label,
+body.bg-white .bg-mode-label,
+body.bg-white .timeline-label { color: rgba(28, 24, 20, 0.55); }
+body.bg-beige .count,
+body.bg-white .count { color: rgba(28, 24, 20, 0.45); }
+body.bg-beige .timeline,
+body.bg-white .timeline { accent-color: #1c1814; }
 
 .city-switcher {
   display: flex;
@@ -124,7 +141,8 @@ body.bg-beige .timeline { accent-color: #1c1814; }
   opacity: 0.72;
   letter-spacing: 0.01em;
 }
-body.bg-beige .legend-title-sub { opacity: 0.78; }
+body.bg-beige .legend-title-sub,
+body.bg-white .legend-title-sub { opacity: 0.78; }
 .legend-item {
   display: flex;
   align-items: center;
@@ -190,6 +208,7 @@ button:disabled { opacity: 0.45; cursor: wait; }
 .bg-mode-switcher {
   display: flex;
   gap: 6px;
+  flex-wrap: wrap;
 }
 .bg-mode-btn {
   flex: 1;

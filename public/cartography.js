@@ -20,6 +20,11 @@
       water: "#C4BCAC",
       graticule: "rgba(40, 36, 32, 0.045)",
     },
+    white: {
+      roads: "#52A8A6",
+      water: "#F0C4B8",
+      graticule: "rgba(82, 168, 166, 0.1)",
+    },
   };
 
   const OUTLINE_DARK = {
@@ -40,6 +45,21 @@
     0: "#6A645C",
   };
 
+  const OUTLINE_WHITE = {
+    1: "#8A3348",
+    2: "#A84E62",
+    3: "#BC6A7C",
+    4: "#CC8894",
+    5: "#9878A8",
+    0: "#9A9692",
+  };
+
+  const OUTLINES_BY_MODE = {
+    black: OUTLINE_DARK,
+    beige: OUTLINE_LIGHT,
+    white: OUTLINE_WHITE,
+  };
+
   let mapRef = null;
   let cityConfig = null;
   let labelEls = [];
@@ -47,8 +67,8 @@
   let activeCityId = null;
   const configCache = {};
 
-  function outlineExpression(isBeige) {
-    const o = isBeige ? OUTLINE_LIGHT : OUTLINE_DARK;
+  function outlineExpression(mode) {
+    const o = OUTLINES_BY_MODE[mode] || OUTLINES_BY_MODE.black;
     return ["match", ["get", "epoch"], 1, o[1], 2, o[2], 3, o[3], 4, o[4], 5, o[5], o[0]];
   }
 
@@ -301,8 +321,7 @@
 
   function applyBuildingStyle(map, backgroundMode) {
     if (!map.getLayer("buildings-fill")) return;
-    const isBeige = backgroundMode === "beige";
-    map.setPaintProperty("buildings-fill", "fill-outline-color", outlineExpression(isBeige));
+    map.setPaintProperty("buildings-fill", "fill-outline-color", outlineExpression(backgroundMode));
     if (map.getLayer("buildings-shadow")) {
       map.setPaintProperty("buildings-shadow", "fill-opacity", 0);
     }
@@ -325,12 +344,12 @@
   }
 
   function labelInk(backgroundMode) {
-    const isBeige = backgroundMode === "beige";
+    const isLight = backgroundMode === "beige" || backgroundMode === "white";
     return {
-      isBeige,
-      faint: isBeige ? "rgba(28, 24, 20, 0.88)" : "rgba(255, 255, 255, 1)",
-      water: isBeige ? "rgba(42, 36, 32, 0.68)" : "rgba(255, 255, 255, 0.72)",
-      shadow: isBeige ? "rgba(216, 208, 194, 0.9)" : "rgba(0, 0, 0, 0.5)",
+      isLight,
+      faint: isLight ? "rgba(28, 24, 20, 0.88)" : "rgba(255, 255, 255, 1)",
+      water: isLight ? "rgba(42, 36, 32, 0.68)" : "rgba(255, 255, 255, 0.72)",
+      shadow: isLight ? "rgba(255, 255, 255, 0.85)" : "rgba(0, 0, 0, 0.5)",
     };
   }
 
@@ -400,13 +419,17 @@
     const scale = canvas.width / 1400;
     const margin = 22 * scale;
     const inner = 18 * scale;
-    const isBeige = backgroundMode === "beige";
-    const ink = isBeige ? "rgba(28, 24, 20, 0.92)" : "rgba(255, 255, 255, 0.94)";
-    const inkSoft = isBeige ? "rgba(48, 42, 36, 0.62)" : "rgba(255, 255, 255, 0.62)";
-    const inkFaint = isBeige ? "rgba(32, 28, 24, 0.52)" : "rgba(255, 255, 255, 0.52)";
-    const frameFill = isBeige ? "rgba(216, 208, 194, 0.62)" : "rgba(0, 0, 0, 0.48)";
-    const frameStroke = isBeige ? "rgba(32, 28, 24, 0.32)" : "rgba(255, 255, 255, 0.3)";
-    const frameInner = isBeige ? "rgba(32, 28, 24, 0.14)" : "rgba(255, 255, 255, 0.12)";
+    const isLight = backgroundMode === "beige" || backgroundMode === "white";
+    const ink = isLight ? "rgba(28, 24, 20, 0.92)" : "rgba(255, 255, 255, 0.94)";
+    const inkSoft = isLight ? "rgba(48, 42, 36, 0.62)" : "rgba(255, 255, 255, 0.62)";
+    const inkFaint = isLight ? "rgba(32, 28, 24, 0.52)" : "rgba(255, 255, 255, 0.52)";
+    const frameFill = backgroundMode === "white"
+      ? "rgba(255, 255, 255, 0.78)"
+      : isLight
+        ? "rgba(216, 208, 194, 0.62)"
+        : "rgba(0, 0, 0, 0.48)";
+    const frameStroke = isLight ? "rgba(32, 28, 24, 0.28)" : "rgba(255, 255, 255, 0.3)";
+    const frameInner = isLight ? "rgba(32, 28, 24, 0.12)" : "rgba(255, 255, 255, 0.12)";
 
     const titleSize = 20 * scale;
     const subSize = 11 * scale;
