@@ -450,6 +450,67 @@ async function waitForFullRender(idlePasses = 4) {
   for (let i = 0; i < idlePasses; i++) await waitForIdle();
 }
 
+async function fetchExportLabels(cityId) {
+  try {
+    const r = await fetch(`data/${cityId}/cartography.json`);
+    if (!r.ok) return [];
+    const data = await r.json();
+    return data.labels || [];
+  } catch {
+    return [];
+  }
+}
+
+function exportLabelInk(mode) {
+  const isLight = mode === "beige" || mode === "white";
+  return {
+    faint: isLight ? "rgba(28, 24, 20, 0.88)" : "rgba(255, 255, 255, 1)",
+    water: isLight ? "rgba(42, 36, 32, 0.68)" : "rgba(255, 255, 255, 0.72)",
+    shadow: isLight ? "rgba(255, 255, 255, 0.85)" : "rgba(0, 0, 0, 0.5)",
+  };
+}
+
+function drawExportLabelsOnBounds(canvas, bounds, labels, mode) {
+  if (!labels.length || !bounds) return;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  const sw = bounds.getSouthWest();
+  const ne = bounds.getNorthEast();
+  const w = canvas.width;
+  const h = canvas.height;
+  const lngSpan = ne.lng - sw.lng;
+  const latSpan = ne.lat - sw.lat;
+  if (!lngSpan || !latSpan) return;
+
+  const fontScale = w / 1200;
+  const ink = exportLabelInk(mode);
+
+  labels.forEach((lb) => {
+    const x = ((lb.lng - sw.lng) / lngSpan) * w;
+    const y = ((ne.lat - lb.lat) / latSpan) * h;
+    if (x < 0 || y < 0 || x > w || y > h) return;
+
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.shadowColor = ink.shadow;
+    ctx.shadowBlur = 10 * fontScale;
+
+    if (lb.water) {
+      ctx.font = `italic ${12 * fontScale}px "Helvetica Neue", Arial, sans-serif`;
+      ctx.fillStyle = ink.water;
+      ctx.fillText(lb.text.toUpperCase(), 0, 0);
+    } else {
+      ctx.font = `500 ${11 * fontScale}px "Helvetica Neue", Arial, sans-serif`;
+      ctx.fillStyle = ink.faint;
+      ctx.fillText(lb.text.toUpperCase(), 0, 0);
+    }
+    ctx.restore();
+  });
+}
+
 async function renderTiledExportCanvas(mapEl, bounds, exportWidth, exportHeight) {
   const sw = bounds.getSouthWest();
   const ne = bounds.getNorthEast();
@@ -489,9 +550,8 @@ async function renderTiledExportCanvas(mapEl, bounds, exportWidth, exportHeight)
     }
   }
 
-  if (window.Cartography?.enabled) {
-    window.Cartography.drawLabelsOnBounds(out, bounds, backgroundMode);
-  }
+  const labels = await fetchExportLabels(currentCity);
+  drawExportLabelsOnBounds(out, bounds, labels, backgroundMode);
   return out;
 }
 
