@@ -118,10 +118,10 @@ const GEOJSON_SOURCE_OPTS = {
   generateId: true,
 };
 
-const BUILDING_LAYER_OPTS = {
-  minzoom: 0,
-  maxzoom: 24,
-};
+/* Print export: 7200px ≈ 60 cm @ 300 DPI on the long edge (typical city crop). */
+const EXPORT_WIDTH = 7200;
+const EXPORT_IDLE_PASSES = 8;
+const EXPORT_CROP_MARGIN = 20;
 
 function getTheme() {
   return BACKGROUND_MODES[backgroundMode] || BACKGROUND_MODES.black;
@@ -431,7 +431,7 @@ function waitForIdle() {
   });
 }
 
-async function waitForFullRender() {
+async function waitForFullRender(idlePasses = 4) {
   applyFilter(ERA_ORDER.length - 1);
   map.setFilter("buildings-fill", null);
   if (map.getLayer("buildings-shadow")) map.setFilter("buildings-shadow", null);
@@ -440,7 +440,7 @@ async function waitForFullRender() {
     await new Promise((r) => setTimeout(r, 50));
     attempts += 1;
   }
-  for (let i = 0; i < 4; i++) await waitForIdle();
+  for (let i = 0; i < idlePasses; i++) await waitForIdle();
 }
 
 async function exportPNG() {
@@ -448,11 +448,10 @@ async function exportPNG() {
   const sidebar = document.getElementById("sidebar");
   const mapEl = document.getElementById("map");
   const navCtrl = document.querySelector(".maplibregl-ctrl-bottom-right");
-  const EXPORT_WIDTH = 3072;
   const bounds = buildingBounds();
 
   btn.disabled = true;
-  btn.textContent = "Exporting…";
+  btn.textContent = "Exporting (print)…";
   stopAnimation();
 
   const saved = {
@@ -467,6 +466,7 @@ async function exportPNG() {
     zoom: map.getZoom(),
     bearing: map.getBearing(),
     pitch: map.getPitch(),
+    pixelRatio: typeof map.getPixelRatio === "function" ? map.getPixelRatio() : window.devicePixelRatio,
   };
 
   try {
@@ -480,16 +480,17 @@ async function exportPNG() {
       width: `${EXPORT_WIDTH}px`, height: `${exportHeight}px`,
     });
     document.body.style.overflow = "hidden";
+    if (typeof map.setPixelRatio === "function") map.setPixelRatio(1);
     map.resize();
     if (bounds) map.fitBounds(bounds, { padding: 0, duration: 0, maxZoom: 22 });
 
-    await waitForFullRender();
+    await waitForFullRender(EXPORT_IDLE_PASSES);
     if (window.Cartography?.enabled) window.Cartography.hideLabelsForExport(true);
     await waitForIdle();
     const mapCanvas = window.Cartography?.enabled
       ? window.Cartography.composeMapWithLabels(map, backgroundMode)
       : map.getCanvas();
-    const cropped = cropCanvasToBuildings(mapCanvas);
+    const cropped = cropCanvasToBuildings(mapCanvas, EXPORT_CROP_MARGIN);
     if (window.Cartography?.enabled) {
       window.Cartography.drawExportCartouche(
         cropped, meta, getTheme(), getEraColors(), ERA_ORDER, ERA_LABELS, backgroundMode
@@ -509,6 +510,7 @@ async function exportPNG() {
     mapEl.style.top = saved.mapTop;
     mapEl.style.zIndex = saved.mapZIndex;
     document.body.style.overflow = saved.bodyOverflow;
+    if (typeof map.setPixelRatio === "function") map.setPixelRatio(saved.pixelRatio);
     sidebar.style.visibility = "";
     if (navCtrl) navCtrl.style.visibility = "";
     if (window.Cartography?.enabled) window.Cartography.hideLabelsForExport(false);
